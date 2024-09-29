@@ -4,9 +4,9 @@ import { Readable } from 'stream';
 import connectMongo from '@/app/lib/mongodb';
 import CidQueue from '@/app/models/CidQueue';
 
-const pinata = new PinataClient(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_API_KEY);
+const pinata = new PinataClient(process.env.PINATA_API_KEY as string, process.env.PINATA_SECRET_API_KEY as string);
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     // Connect to MongoDB (ensure this uses connection pooling)
     await connectMongo();
@@ -19,8 +19,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'File not provided or invalid' }, { status: 400 });
     }
 
-    // Create a readable stream directly from the Blob
-    const readableStream = Readable.from(file.stream());
+    // Convert Blob to ArrayBuffer and then to Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Create a readable stream from the buffer
+    const readableStream = Readable.from(buffer);
 
     const metadata = {
       pinataMetadata: {
@@ -46,7 +50,7 @@ export async function POST(req: Request) {
     console.error('Upload error:', error);
 
     // Check for specific errors (like timeout)
-    if (error.message === 'Upload to Pinata timed out') {
+    if (error instanceof Error && error.message === 'Upload to Pinata timed out') {
       return NextResponse.json({ error: 'Upload timed out' }, { status: 504 });
     }
 
@@ -56,7 +60,7 @@ export async function POST(req: Request) {
 }
 
 // Helper function to add a timeout for async tasks
-function withTimeout(promise: Promise<any>, timeoutMs: number) {
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => reject(new Error('Upload to Pinata timed out')), timeoutMs);
     promise
