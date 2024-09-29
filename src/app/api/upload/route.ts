@@ -6,9 +6,9 @@ import CidQueue from '@/app/models/CidQueue';
 
 const pinata = new PinataClient(process.env.PINATA_API_KEY as string, process.env.PINATA_SECRET_API_KEY as string);
 
-// Define maximum duration for the function
-export const maxDuration = 25; // Maximum of 5 seconds
-export const dynamic = 'force-dynamic'; // Force dynamic to extend time
+// Define maximum duration for the function (30 seconds to accommodate longer uploads)
+export const maxDuration = 30; // Increased maximum duration to 30 seconds
+export const dynamic = 'force-dynamic'; // Force dynamic behavior for longer tasks
 
 export async function POST(req: Request): Promise<NextResponse> {
   try {
@@ -36,10 +36,10 @@ export async function POST(req: Request): Promise<NextResponse> {
       },
     };
 
-    // Set a reasonable timeout for Pinata upload
+    // Set a reasonable timeout for Pinata upload (30 seconds to match function duration)
     const result = await withTimeout(
       pinata.pinFileToIPFS(readableStream, metadata),
-      10000 // Timeout in 10 seconds
+      30000 // Timeout in 30 seconds
     );
     const ipfsHash = result.IpfsHash;
 
