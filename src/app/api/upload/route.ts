@@ -6,6 +6,10 @@ import CidQueue from '@/app/models/CidQueue';
 
 const pinata = new PinataClient(process.env.PINATA_API_KEY as string, process.env.PINATA_SECRET_API_KEY as string);
 
+// Define maximum duration for the function
+export const maxDuration = 25; // Maximum of 5 seconds
+export const dynamic = 'force-dynamic'; // Force dynamic to extend time
+
 export async function POST(req: Request): Promise<NextResponse> {
   try {
     // Connect to MongoDB (ensure this uses connection pooling)
