@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import CidQueue from '../models/CidQueue';
+
 
 const mongoUri = process.env.MONGODB_URI;
 

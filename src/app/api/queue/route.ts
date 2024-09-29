@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import connectMongo from '../../lib/mongodb';
 import CidQueue from '../../models/CidQueue';  // Ensure the correct import path for your model
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     // Connect to MongoDB
     await connectMongo();
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
 
 
 
-export async function DELETE(req: Request) {
+export async function DELETE(_req: Request) {
   try {
     // Connect to MongoDB
     await connectMongo();

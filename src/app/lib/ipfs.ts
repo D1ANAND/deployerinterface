@@ -12,7 +12,7 @@ const client = create({
   },
 });
 
-export async function POST(req: { formData: () => any; }) {
+export async function POST(req: { formData: () => any }) {
   const file = await req.formData();
   const added = await client.add(file);
   return NextResponse.json({ url: `https://gateway.pinata.cloud/ipfs/${added.path}` });
