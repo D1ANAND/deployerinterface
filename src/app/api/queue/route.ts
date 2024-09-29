@@ -7,19 +7,21 @@ export async function GET(req: Request) {
     // Connect to MongoDB
     await connectMongo();
 
-    // Get the first CID in the queue, sorted by creation date (oldest first)
-    const firstInQueue = await CidQueue.findOne().sort({ createdAt: 1 });
+    // Get the first CID in the queue, sorted by creation date (oldest first), and only return the `cid` field
+    const firstInQueue = await CidQueue.findOne({}, { cid: 1, _id: 0 }).sort({ createdAt: 1 });
 
     if (!firstInQueue) {
       return NextResponse.json({ error: 'Queue is empty' }, { status: 404 });
     }
 
-    return NextResponse.json(firstInQueue, { status: 200 });
+    return NextResponse.json({ cid: firstInQueue.cid }, { status: 200 });  // Return only the `cid`
   } catch (error) {
     console.error('Queue retrieval error:', error);
     return NextResponse.json({ error: 'Error retrieving queue' }, { status: 500 });
   }
 }
+
+
 
 export async function DELETE(req: Request) {
   try {
